@@ -1,27 +1,48 @@
 import { Client, IntentsBitField } from "discord.js";
 import "dotenv/config";
+import userMessage from "./events/userMessage";
+import botCommands from "./commands/commands";
+import { joinVoiceChannel } from "@discordjs/voice";
+import joinVoice from "./commands/bot-interactions/joinVoice";
 
-const token = process.env.ACCESS_TOKEN;
-
-const { Guilds, GuildMembers, GuildMessages, MessageContent } =
-  IntentsBitField.Flags;
+const {
+  Guilds,
+  GuildMembers,
+  GuildMessages,
+  MessageContent,
+  GuildVoiceStates,
+} = IntentsBitField.Flags;
 
 const client = new Client({
-  intents: [Guilds, GuildMembers, MessageContent, GuildMessages],
+  intents: [
+    Guilds,
+    GuildMembers,
+    MessageContent,
+    GuildMessages,
+    GuildVoiceStates,
+  ],
 });
 
-client.login(token);
+const { ACCESS_TOKEN, GUILD_ID } = process.env as Record<string, string>;
+
+client.login(ACCESS_TOKEN);
 
 client.on("ready", () => {
   console.log("Bot is ready.");
+  botCommands();
 });
 
 client.on("messageCreate", (message) => {
-  if (message.author.bot) return;
+  userMessage(message);
+});
 
-  const content = message.content.toLowerCase();
+client.on("interactionCreate", (interaction) => {
+  if (!interaction.isChatInputCommand()) return;
 
-  if (content === "hi") {
-    message.reply("Hello");
+  const { commandName } = interaction;
+
+  switch (commandName) {
+    case "join":
+      joinVoice(interaction);
   }
 });
