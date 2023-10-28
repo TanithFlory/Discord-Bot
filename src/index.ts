@@ -4,6 +4,7 @@ import userMessage from "./events/userMessage";
 import botCommands from "./commands/commands";
 import { joinVoiceChannel } from "@discordjs/voice";
 import joinVoice from "./commands/bot-interactions/joinVoice";
+import playMusic from "./commands/bot-interactions/playMusic";
 
 const {
   Guilds,
@@ -44,5 +45,7 @@ client.on("interactionCreate", (interaction) => {
   switch (commandName) {
     case "join":
       joinVoice(interaction);
+    case "play":
+      playMusic(interaction);
   }
 });

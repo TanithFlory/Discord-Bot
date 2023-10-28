@@ -9,11 +9,13 @@ export default function joinVoice(interaction: Interaction) {
   if (!channelId)
     return interaction.reply("Please be connected to a voice channel.");
 
-  joinVoiceChannel({
+  const connection = joinVoiceChannel({
     channelId: channelId,
     guildId: interaction.guild!.id,
     adapterCreator: interaction.guild!.voiceAdapterCreator,
   });
 
   interaction.reply("Joined the voice channel");
+
+  return connection;
 }
