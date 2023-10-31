@@ -1,21 +1,24 @@
 import { joinVoiceChannel } from "@discordjs/voice";
 import { Interaction } from "discord.js";
 
-export default function joinVoice(interaction: Interaction) {
+export default async function joinVoice(interaction: Interaction) {
   const channelId = (interaction.member as any).voice.channel?.id;
 
   if (!interaction.isChatInputCommand()) return;
 
   if (!channelId)
-    return interaction.reply("Please be connected to a voice channel.");
+    return await interaction.editReply(
+      "Please be connected to a voice channel."
+    );
 
-  const connection = joinVoiceChannel({
+  joinVoiceChannel({
     channelId: channelId,
     guildId: interaction.guild!.id,
     adapterCreator: interaction.guild!.voiceAdapterCreator,
+    selfDeaf: false,
   });
 
-  interaction.reply("Joined the voice channel");
+  await interaction.editReply("Joined the voice channel");
 
-  return connection;
+  return true;
 }

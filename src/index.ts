@@ -2,9 +2,9 @@ import { Client, IntentsBitField } from "discord.js";
 import "dotenv/config";
 import userMessage from "./events/userMessage";
 import botCommands from "./commands/commands";
-import { joinVoiceChannel } from "@discordjs/voice";
 import joinVoice from "./commands/bot-interactions/joinVoice";
 import playMusic from "./commands/bot-interactions/playMusic";
+import { Player } from "discord-player";
 
 const {
   Guilds,
@@ -24,12 +24,19 @@ const client = new Client({
   ],
 });
 
+export const player = new Player(client, {
+  ytdlOptions: {
+    quality: "highestaudio",
+  },
+});
+
 const { ACCESS_TOKEN, GUILD_ID } = process.env as Record<string, string>;
 
 client.login(ACCESS_TOKEN);
 
-client.on("ready", () => {
+client.on("ready", async () => {
   console.log("Bot is ready.");
+  initializePlayer();
   botCommands();
 });
 
@@ -37,15 +44,30 @@ client.on("messageCreate", (message) => {
   userMessage(message);
 });
 
-client.on("interactionCreate", (interaction) => {
+client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
+
+  await interaction.deferReply();
 
   const { commandName } = interaction;
 
   switch (commandName) {
     case "join":
-      joinVoice(interaction);
+      await joinVoice(interaction);
     case "play":
-      playMusic(interaction);
+      await playMusic(interaction);
   }
 });
+
+// player.events.on("playerStart", async (queue, track) => {
+//   // queue.metadata.channel.send(`Started playing **${track.title}**!`);
+//   // await queue.play();
+// });
+
+player.events.on("error", (_queue, error) => {
+  console.log(error);
+});
+
+async function initializePlayer() {
+  await player.extractors.loadDefault((ext) => ext !== "YouTubeExtractor");
+}
