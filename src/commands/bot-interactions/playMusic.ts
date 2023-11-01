@@ -8,6 +8,7 @@ async function playMusic(interaction: Interaction) {
   const link = (interaction as any).options.getString("song-input", true);
   const player = useMainPlayer();
   player.extractors.register(YouTubeExtractor, {});
+  
   try {
     const channel = (interaction as any).member.voice.channel;
 
@@ -19,14 +20,13 @@ async function playMusic(interaction: Interaction) {
 
     const searchResults = await player.search(link, {
       requestedBy: interaction.user,
-      searchEngine: QueryType.YOUTUBE,
-      fallbackSearchEngine: QueryType.YOUTUBE,
+      searchEngine: QueryType.AUTO,
     });
-
+    
     if (!searchResults.tracks.length) {
       return interaction.editReply("Not found.");
     }
-    
+
     const track = searchResults.tracks[0];
     const queue = new GuildQueue(player, {} as any);
 

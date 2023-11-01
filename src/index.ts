@@ -36,7 +36,7 @@ client.login(ACCESS_TOKEN);
 
 client.on("ready", async () => {
   console.log("Bot is ready.");
-  initializePlayer();
+  await player.extractors.loadDefault((ext) => ext !== "YouTubeExtractor");
   botCommands();
 });
 
@@ -67,7 +67,3 @@ client.on("interactionCreate", async (interaction) => {
 player.events.on("error", (_queue, error) => {
   console.log(error);
 });
-
-async function initializePlayer() {
-  await player.extractors.loadDefault((ext) => ext !== "YouTubeExtractor");
-}
