@@ -26,6 +26,7 @@
     "youtube-ext": "^1.1.16"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "typescript": "^5.2.2"
   }
 }
